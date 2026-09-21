@@ -156,6 +156,8 @@ button:focus-visible, input:focus-visible {
   font-weight: 800;
 }
 .count-btn[aria-checked="true"] { background: var(--gold); box-shadow: var(--shadow); }
+.timer-grid { grid-template-columns: repeat(3, 1fr); }
+.timer-grid .count-btn { font-size: 1rem; }
 .name-fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
 .name-fields input {
   width: 100%;

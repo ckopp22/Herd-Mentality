@@ -5,7 +5,11 @@
   var WIN_TARGET = 20;
   var MIN_PLAYERS = 1;
   var MAX_PLAYERS = 8;
-  var COUNTDOWN_SECONDS = 3;
+  var TIMER_OPTIONS = [
+    { seconds: 0, label: 'No timer' },
+    { seconds: 5, label: '5 seconds' },
+    { seconds: 10, label: '10 seconds' }
+  ];
   var RING_LENGTH = 276.46; // 2 * PI * r (r = 44), matches style.css
   var LS_SOUND = 'herd.soundOn';
   var LS_SETUP = 'herd.setup';
@@ -14,6 +18,7 @@
     screen: 'menu',
     players: [],          // [{ id, name, coins }]
     winTarget: WIN_TARGET,
+    countdownSeconds: 5,  // 0 = no timer
     soundOn: true,
     promptQueue: [],
     lastPrompt: null,
@@ -24,13 +29,14 @@
     timer: null
   };
 
-  var setup = { count: 4, names: [] };
+  var setup = { count: 4, names: [], timer: 5 };
 
   var $ = function (id) { return document.getElementById(id); };
   var els = {
     screens: document.querySelectorAll('.screen'),
     soundToggles: document.querySelectorAll('.sound-toggle'),
     countGrid: $('count-grid'),
+    timerGrid: $('timer-grid'),
     nameFields: $('name-fields'),
     roundBadge: $('round-badge'),
     promptText: $('prompt-text'),
@@ -167,6 +173,17 @@
       b.setAttribute('aria-checked', String(n === setup.count));
       els.countGrid.appendChild(b);
     }
+    els.timerGrid.innerHTML = '';
+    TIMER_OPTIONS.forEach(function (opt) {
+      var t = document.createElement('button');
+      t.type = 'button';
+      t.className = 'count-btn';
+      t.textContent = opt.label;
+      t.dataset.seconds = opt.seconds;
+      t.setAttribute('role', 'radio');
+      t.setAttribute('aria-checked', String(opt.seconds === setup.timer));
+      els.timerGrid.appendChild(t);
+    });
     els.nameFields.innerHTML = '';
     for (var i = 0; i < setup.count; i++) {
       var input = document.createElement('input');
@@ -187,6 +204,8 @@
       var saved = JSON.parse(raw);
       var c = parseInt(saved.count, 10);
       if (c >= MIN_PLAYERS && c <= MAX_PLAYERS) setup.count = c;
+      var t = parseInt(saved.timer, 10);
+      if (TIMER_OPTIONS.some(function (o) { return o.seconds === t; })) setup.timer = t;
       if (Array.isArray(saved.names)) setup.names = saved.names.slice(0, MAX_PLAYERS).map(String);
     } catch (e) { /* ignore bad data */ }
   }
@@ -275,6 +294,15 @@
 
   function startCountdown() {
     clearTimer();
+    var total = state.countdownSeconds;
+    if (!total) {
+      // no timer: hide the ring and let the host award coins right away
+      els.countdown.hidden = true;
+      state.countdownReady = true;
+      setChipsEnabled(true);
+      return;
+    }
+    els.countdown.hidden = false;
     state.countdownReady = false;
     setChipsEnabled(false);
     els.countdown.classList.remove('done');
@@ -283,10 +311,10 @@
     els.ring.style.transition = 'none';
     els.ring.style.strokeDashoffset = '0';
     void els.ring.getBoundingClientRect(); // force reflow so the reset sticks
-    els.ring.style.transition = 'stroke-dashoffset ' + COUNTDOWN_SECONDS + 's linear';
+    els.ring.style.transition = 'stroke-dashoffset ' + total + 's linear';
     els.ring.style.strokeDashoffset = String(RING_LENGTH);
 
-    var remaining = COUNTDOWN_SECONDS;
+    var remaining = total;
     els.countdownNum.textContent = remaining;
     play('tick');
 
@@ -326,6 +354,7 @@
 
   function startGame(players) {
     clearTimer();
+    state.countdownSeconds = setup.timer;
     state.players = players;
     state.round = 0;
     state.lastPrompt = null;
@@ -405,7 +434,7 @@
       var name = (setup.names[i] || '').trim();
       players.push({ id: 'p' + (i + 1), name: name || 'Player ' + (i + 1), coins: 0 });
     }
-    store(LS_SETUP, JSON.stringify({ count: setup.count, names: setup.names.slice(0, setup.count) }));
+    store(LS_SETUP, JSON.stringify({ count: setup.count, names: setup.names.slice(0, setup.count), timer: setup.timer }));
     return players;
   }
 
@@ -441,6 +470,14 @@
     if (!btn) return;
     readNamesFromInputs();
     setup.count = parseInt(btn.dataset.count, 10);
+    renderSetup();
+  });
+
+  els.timerGrid.addEventListener('click', function (e) {
+    var btn = e.target.closest('.count-btn');
+    if (!btn) return;
+    readNamesFromInputs();
+    setup.timer = parseInt(btn.dataset.seconds, 10);
     renderSetup();
   });
 

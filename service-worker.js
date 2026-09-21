@@ -1,6 +1,6 @@
 /* Herd Mentality service worker: cache the app shell, serve cache-first. */
 // Bump this whenever any cached file changes so installed apps pick up the update.
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = 'herd-mentality-' + CACHE_VERSION;
 
 const APP_SHELL = [
