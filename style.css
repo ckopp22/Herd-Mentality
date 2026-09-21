@@ -171,6 +171,7 @@ button:focus-visible, input:focus-visible {
 /* ---------- Play ---------- */
 #screen-play { gap: 12px; }
 .play-top { display: flex; justify-content: space-between; align-items: center; }
+.play-actions { display: flex; align-items: center; gap: 10px; }
 .round-badge {
   padding: 0.35rem 0.9rem;
   background: var(--milk);

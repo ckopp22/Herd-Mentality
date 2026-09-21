@@ -29,7 +29,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var els = {
     screens: document.querySelectorAll('.screen'),
-    soundToggle: $('sound-toggle'),
+    soundToggles: document.querySelectorAll('.sound-toggle'),
     countGrid: $('count-grid'),
     nameFields: $('name-fields'),
     roundBadge: $('round-badge'),
@@ -103,9 +103,17 @@
       tone(1319, 0.08, 0.18, 'triangle', 0.25);
     },
     undo: function () { tone(330, 0, 0.12, 'triangle', 0.18); },
-    win: function () {
-      [523, 659, 784, 1047].forEach(function (f, i) {
-        tone(f, i * 0.13, 0.25, 'triangle', 0.28);
+    tap: function () { tone(520, 0, 0.06, 'sine', 0.16); },
+    celebrate: function () {
+      // rising fanfare, a few sparkles, then a big held chord
+      [523, 659, 784, 1047, 784, 1047, 1319].forEach(function (f, i) {
+        tone(f, i * 0.11, 0.22, 'triangle', 0.26);
+      });
+      [2093, 2637, 3136, 2637, 3136, 4186].forEach(function (f, i) {
+        tone(f, 0.15 + i * 0.09, 0.12, 'sine', 0.08);
+      });
+      [523, 659, 784, 1047].forEach(function (f) {
+        tone(f, 0.85, 1.1, 'triangle', 0.18);
       });
     }
   };
@@ -124,10 +132,12 @@
 
   /* ---------- Sound toggle ---------- */
   function renderSound() {
-    els.soundToggle.textContent = state.soundOn ? '🔊' : '🔇';
-    els.soundToggle.setAttribute('aria-pressed', String(state.soundOn));
-    els.soundToggle.setAttribute('aria-label', state.soundOn ? 'Sound on' : 'Sound off');
-    els.soundToggle.classList.toggle('off', !state.soundOn);
+    Array.prototype.forEach.call(els.soundToggles, function (btn) {
+      btn.textContent = state.soundOn ? '🔊' : '🔇';
+      btn.setAttribute('aria-pressed', String(state.soundOn));
+      btn.setAttribute('aria-label', state.soundOn ? 'Sound on' : 'Sound off');
+      btn.classList.toggle('off', !state.soundOn);
+    });
   }
 
   function toggleSound() {
@@ -345,15 +355,15 @@
       void chip.offsetWidth;
       chip.classList.add('pop');
     }
-    if (p.coins >= state.winTarget) endGame(true);
+    if (p.coins >= state.winTarget) endGame();
   }
 
   /* ---------- Scorecard ---------- */
-  function endGame(reachedTarget) {
+  function endGame() {
     clearTimer();
     renderScorecard();
     showScreen('score');
-    if (reachedTarget) play('win');
+    play('celebrate');
   }
 
   function renderScorecard() {
@@ -401,14 +411,25 @@
 
   function on(id, fn) { $(id).addEventListener('click', fn); }
 
+  // Every button press makes a tap sound (capture phase, so it runs before the
+  // button's own handler). Chips are skipped because they play the coin sound.
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('button');
+    if (!btn) return;
+    ensureAudio();
+    if (!btn.classList.contains('chip')) play('tap');
+  }, true);
+
   on('btn-play', function () { ensureAudio(); goToSetup(); });
   on('btn-howto', function () { showScreen('howto'); });
   on('btn-howto-back', function () { showScreen('menu'); });
   on('btn-setup-back', function () { readNamesFromInputs(); showScreen('menu'); });
   on('btn-start', function () { ensureAudio(); startGame(buildPlayersFromSetup()); });
-  on('sound-toggle', toggleSound);
+  Array.prototype.forEach.call(els.soundToggles, function (btn) {
+    btn.addEventListener('click', toggleSound);
+  });
   on('btn-next', function () { ensureAudio(); loadRound(); });
-  on('btn-end', function () { endGame(false); });
+  on('btn-end', function () { endGame(); });
   on('btn-menu', function () { showScreen('menu'); });
   on('btn-again', function () {
     ensureAudio();

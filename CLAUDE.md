@@ -25,13 +25,13 @@ Source of truth for requirements: `Herd Mentality - Web App MDD.md` (acceptance 
 - **Tap targets:** at least 48px (`--tap`); player chips are larger because they are tapped repeatedly. With 8 players the chips must stay in two rows (4 columns), not shrink.
 - **The two host actions are single taps:** awarding a coin (tap a chip; tap again to undo) and next prompt (the big dashed zone, kept visually separate from the chips so awarding never advances).
 - Game ends the instant any player reaches `winTarget` (20), inside `toggleAward()`.
-- Prompts: short, open-ended, lighthearted, no divisive/offensive/NSFW content. Target 75-100 with no duplicates.
+- Prompts: short, open-ended, lighthearted, no divisive/offensive/NSFW content. Currently ~296; keep no duplicates (case-insensitive).
 - Match the existing style: 2-space indent, `var`/function style in `script.js` (ES5-compatible), textContent instead of innerHTML for user-entered names.
 
 ## Run and test
 - Serve: `python3 -m http.server 8000`, then open http://localhost:8000 (needed to test the service worker and manifest; `localhost` counts as secure).
 - Also check `file://` still plays the game.
-- Prompt sanity check: `node`-free, e.g. `python3 -c "import re;s=open('data/prompts.js').read();p=re.findall(r'^\s+\"(.+)\",?$',s,re.M);print(len(p),len(set(p)))"` should print equal numbers in the 75-100 range.
+- Prompt sanity check: `node`-free, e.g. `python3 -c "import re;s=open('data/prompts.js').read();p=re.findall(r'^\s+\"(.+)\",?$',s,re.M);print(len(p),len(set(p)))"` should print equal numbers (no duplicates).
 
 ## Deploy
 Push to `main`; GitHub Pages serves the repo root (see README). Do not push or create remote repos without the user asking.

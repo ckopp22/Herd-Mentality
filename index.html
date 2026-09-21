@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#2f5d3a">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-maskable-512.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Herd Mentality">
@@ -19,7 +19,7 @@
 
     <!-- A. Main Menu -->
     <section id="screen-menu" class="screen" data-screen="menu">
-      <button id="sound-toggle" class="icon-btn corner" type="button" aria-pressed="true" aria-label="Sound on">🔊</button>
+      <button class="icon-btn corner sound-toggle" type="button" aria-pressed="true" aria-label="Sound on">🔊</button>
       <div class="menu-body">
         <div class="logo" aria-hidden="true">🐄</div>
         <h1 class="title">Herd<br>Mentality</h1>
@@ -67,7 +67,10 @@
     <section id="screen-play" class="screen" data-screen="play" hidden>
       <header class="play-top">
         <div class="round-badge" id="round-badge">Round 1</div>
-        <button id="btn-end" class="btn btn-danger btn-small" type="button">End Game</button>
+        <div class="play-actions">
+          <button class="icon-btn sound-toggle" type="button" aria-pressed="true" aria-label="Sound on">🔊</button>
+          <button id="btn-end" class="btn btn-danger btn-small" type="button">End Game</button>
+        </div>
       </header>
 
       <div class="prompt-area">
