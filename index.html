@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Herd Mentality</title>
+  <meta name="description" content="A cow-themed party game. Think like the herd, win Cow Coins.">
+  <meta name="theme-color" content="#2f5d3a">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Herd Mentality">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+
+    <!-- A. Main Menu -->
+    <section id="screen-menu" class="screen" data-screen="menu">
+      <button id="sound-toggle" class="icon-btn corner" type="button" aria-pressed="true" aria-label="Sound on">🔊</button>
+      <div class="menu-body">
+        <div class="logo" aria-hidden="true">🐄</div>
+        <h1 class="title">Herd<br>Mentality</h1>
+        <p class="tagline">Think like the herd. Win Cow Coins.</p>
+        <div class="stack">
+          <button id="btn-play" class="btn btn-primary" type="button">PLAY</button>
+          <button id="btn-howto" class="btn btn-secondary" type="button">How to Play</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- B. How to Play -->
+    <section id="screen-howto" class="screen" data-screen="howto" hidden>
+      <div class="panel">
+        <h2>How to Play</h2>
+        <ol class="rules">
+          <li>A <strong>prompt</strong> appears, like “Best topping on pancakes”.</li>
+          <li>Everyone thinks during the <strong>countdown</strong>.</li>
+          <li>At “MOO!”, all players <strong>shout their answer</strong> out loud at once.</li>
+          <li>The host taps every player who <strong>matched the majority</strong> (the herd) to give them a Cow Coin 🪙.</li>
+          <li>Tap the big area to <strong>moove on</strong> to the next prompt.</li>
+          <li>First to <strong>20 Cow Coins</strong> wins — or the host can <strong>End Game</strong> any time.</li>
+        </ol>
+        <p class="hint">Don't be a black sheep — er, cow. Think like everyone else!</p>
+        <button id="btn-howto-back" class="btn btn-secondary" type="button">Back</button>
+      </div>
+    </section>
+
+    <!-- C. Player Setup -->
+    <section id="screen-setup" class="screen" data-screen="setup" hidden>
+      <div class="panel">
+        <h2>Who's in the herd?</h2>
+        <p class="label" id="count-label">Number of players</p>
+        <div id="count-grid" class="count-grid" role="radiogroup" aria-labelledby="count-label"></div>
+        <p class="label">Names <span class="muted">(optional)</span></p>
+        <div id="name-fields" class="name-fields"></div>
+        <div class="row">
+          <button id="btn-setup-back" class="btn btn-secondary" type="button">Back</button>
+          <button id="btn-start" class="btn btn-primary" type="button">Start Game</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- D. Play Screen -->
+    <section id="screen-play" class="screen" data-screen="play" hidden>
+      <header class="play-top">
+        <div class="round-badge" id="round-badge">Round 1</div>
+        <button id="btn-end" class="btn btn-danger btn-small" type="button">End Game</button>
+      </header>
+
+      <div class="prompt-area">
+        <p id="prompt-text" class="prompt-text" aria-live="polite"></p>
+        <div id="countdown" class="countdown" aria-live="assertive">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="ring-bg" cx="50" cy="50" r="44"></circle>
+            <circle id="ring" class="ring" cx="50" cy="50" r="44"></circle>
+          </svg>
+          <span id="countdown-num" class="countdown-num">3</span>
+        </div>
+      </div>
+
+      <div id="player-chips" class="chips" role="group" aria-label="Award Cow Coins"></div>
+
+      <button id="btn-next" class="next-zone" type="button">
+        <span class="next-main">Tap here for the next prompt</span>
+        <span class="next-sub">Moove on! 🐄</span>
+      </button>
+    </section>
+
+    <!-- E. Scorecard -->
+    <section id="screen-score" class="screen" data-screen="score" hidden>
+      <div class="panel">
+        <div class="trophy" aria-hidden="true">🏆</div>
+        <h2 id="score-heading">Final Scorecard</h2>
+        <ol id="score-list" class="score-list"></ol>
+        <div class="row">
+          <button id="btn-again" class="btn btn-primary" type="button">Play Again</button>
+          <button id="btn-menu" class="btn btn-secondary" type="button">Back to Menu</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="data/prompts.js"></script>
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('service-worker.js').catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
